@@ -1,0 +1,68 @@
+#!/bin/bash
+
+if [ "$#" -ne 2 ]; then
+	echo "$0 suite.txt ./myprogram" >&2
+	exit 1
+fi
+
+if  [ ! -x $2 ]; then
+        echo "$2 is not executable" >&2
+        exit 1
+fi
+
+if [ ! -r $1 ]; then
+        echo "$1 is not readable" >&2
+        exit 1
+fi
+
+n=0
+
+for f in $(cat $1); do
+	if [ ! -r "$f.out" ]; then
+                echo "File $f.out does not exist or is not readable" >&2
+                n=1
+        fi
+        
+        if [ -r "$f.args" ] || [ -r "$f.in" ]; then 
+	if [ -r "$f.out" ]; then
+                TMPFILE='mktemp' || exit 1
+
+                if [ -r "$f.in" ]; then
+		if [ -r "$f.args" ]; then
+			$2 $(cat $f.args) < $f.in > $TMPFILE
+		else
+			$2 < $f.in > $TMPFILE
+		fi
+		else
+			$2 $(cat $f.args) > $TMPFILE
+		fi
+
+                if diff "$f.out" $TMPFILE > /dev/null;
+                then
+                        :
+                else  
+                        echo Test failed: $f
+                        echo Args:
+                        if  [ -r "$f.args" ]; then
+				cat "$f.args"
+			fi
+			 echo Input:
+			if  [ -r "$f.in" ]; then
+				cat "$f.in"
+			fi
+                        echo Expected:
+                        cat "$f.out"
+                        echo Actual:
+                        cat $TMPFILE
+                fi
+        rm $TMPFILE
+        
+        fi
+        else
+        echo "does not find $f" >&2
+        n=1
+        fi
+done
+exit $n
+
+

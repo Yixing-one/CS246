@@ -1,0 +1,51 @@
+#!/bin/bash
+
+if [ $# -ne 2 ]; then
+echo "$0 suite.txt ./myprogram " >&2
+exit 1
+fi
+
+if  [ ! -x $2 ]; then
+echo "$0 suite.txt ./myprogram" >&2
+exit 1
+fi
+
+if [ ! -r $1 ]; then
+echo "$0 suite.txt ./myprogram" >&2
+exit 1
+fi 
+
+n=0
+
+for f in $(cat $1); do
+
+if [ -e "$f.out" ]; then
+if [ ! -w "$f.out" ]; then
+n=1
+echo "the $f.out is not writable" >&2
+fi
+fi
+
+if [ ! -e "$f.args" ]; then
+$2 > $f.out
+fi
+
+if [ ! -r "$f.args" ]; then
+if [ -e "$f.args" ]; then
+echo "the $f.args is not readable" >&2
+n=1
+fi
+fi
+
+if [ ! -e "$f.out" ] || [ -w "$f.out" ]; then
+if [ -r "$f.args" ]; then
+ $2 $(cat $f.args) > $f.out
+fi
+fi
+ 
+done
+
+exit $n
+
+
+ 

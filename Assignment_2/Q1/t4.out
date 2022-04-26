@@ -1,0 +1,21 @@
+Credit Card Calculator
+Initial Balance: $0.00
+Interest: 0.00%/year (0.00%/month)
+
+Enter the amount of the new purchases this month: 500
+Enter the amount paid this month: 800
+
+Month: 1
+Previous balance: $0.00
+ + Interest: $0.00 + Purchases: $500.00 - Payment: $800.00
+ = New balance: $-300.00
+
+Enter the amount of the new purchases this month: 755.25
+Enter the amount paid this month: 350.5
+
+Month: 2
+Previous balance: $-300.00
+ + Interest: $0.00 + Purchases: $755.25 - Payment: $350.50
+ = New balance: $104.75
+
+Enter the amount of the new purchases this month: 
