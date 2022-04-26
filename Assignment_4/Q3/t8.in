@@ -1,0 +1,11 @@
+new 4
+init 
+0 1
+0 0
+3 3
+-1 -1
+game 3
+switch 2 2
+switch 3 1
+switch 3 3
+neighbours

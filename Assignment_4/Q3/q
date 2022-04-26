@@ -1,0 +1,152 @@
+#include <iostream>
+#include "grid.h"
+#include <vector>
+
+using namespace std;
+
+Grid::Grid() {
+    vector<vector<Cell>> theGrid;
+    won = false;
+}
+
+Grid::~Grid() { 
+    for (int i = 0; i < gridSize; i ++) {
+        theGrid[i].erase(theGrid[i].begin(), theGrid[i].end());
+    }
+    delete td;
+} 
+    
+void Grid::clearGrid() { 
+    for (int i = 0; i < gridSize; i ++) {
+        theGrid[i].erase(theGrid[i].begin(), theGrid[i].end());
+    }
+    gridSize = 0;
+    delete td;
+    td = nullptr;
+}
+
+bool Grid::isWon() const { 
+    int z = 0;
+    for (int i = 0; i < gridSize; i ++) {
+        for (int k = 0; k < gridSize; k++) {
+              if(!theGrid[i][k].getState()) {
+                  z += 1;
+              }
+        }
+    }
+    if (z ==  gridSize*gridSize) {
+        return true;
+    } else {
+        return  false;
+    }
+}
+
+void Grid::init(int n) {
+    for (int i = 0; i < n; i ++) {
+        vector<Cell> ct;
+        for (int k = 0; k < n; k++) {
+            Cell c;
+            c.setCoords(i,k);
+            ct.push_back(c);
+        }
+        theGrid.push_back(ct);
+    }
+    for (int i = 0; i < n; i ++) {
+        for (int k = 0; k < n; k++) {
+            int i1 = i;
+            int k1 = k + 1;
+            if (k1 < gridSize) {
+                theGrid[i][k].attach(&theGrid[i1][k1]);
+            }
+            i1 = i+1;
+            k1 = k;
+            if (i1 < gridSize) {
+                theGrid[i][k].attach(&theGrid[i1][k1]);
+            }
+            i1 = i-1;
+            k1 = k;
+            if (i1 >= 0) {
+                theGrid[i][k].attach(&theGrid[i1][k1]);
+            }
+            i1 = i;
+            k1 = k-1;
+            if (k1 >= 0) {
+                theGrid[i][k].attach(&theGrid[i1][k1]);
+            }
+        }
+    }
+    td = new TextDisplay(n);
+    gridSize = n;
+    won = false;
+}
+
+void Grid::turnOn(int r, int c) {
+    theGrid[r][c].setOn();
+    td->notify(theGrid[r][c]);
+}
+
+void Grid::toggle(int r, int c) {
+		theGrid[r][c].toggle();
+		td->notify(theGrid[r][c]); 
+		if(r+1 < gridSize) {
+		    td->notify(theGrid[r+1][c]);
+		}
+		if(c+1 < gridSize) {
+		    td->notify(theGrid[r][c+1]);
+		}
+		if(r-1 < gridSize) {
+		    td->notify(theGrid[r-1][c]);
+		}
+		if(c-1 < gridSize) {
+		    td->notify(theGrid[r][c-1]);
+		}
+}
+
+void Grid::printCells() const {
+    for(int i = 0; i < gridSize; i++) {
+        for(int h = 0; h < gridSize; h++) {
+            cout << "(";
+            cout << i;
+            cout << ",";
+            cout << h;
+            cout << ")";
+            cout << ": ";
+            if((h - 1) >= 0) {
+              cout << "(";
+              cout << i;
+              cout << ",";
+              cout << h - 1;
+              cout << "), ";
+            }
+            if((h + 1) < gridSize) {
+              cout << "(";
+              cout << i;
+              cout << ",";
+              cout << h + 1;
+              cout << "), ";
+            }
+            if ((i - 1) >= 0) {
+              cout << "(";
+              cout << i - 1;
+              cout << ",";
+              cout << h;
+              cout << "),"; 
+            }
+            if ((i + 1) < gridSize) {
+              cout << "(";
+              cout << i + 1;
+              cout << ",";
+              cout << h;
+              cout << "),";
+            }
+            cout << " TD";
+            cout << endl;
+            }
+        }
+   }
+   
+   std::ostream &operator<<(std::ostream &out, const Grid &g) {
+       out << *(g.td);
+       return out;
+   }
+

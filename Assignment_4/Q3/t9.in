@@ -1,0 +1,10 @@
+new 5
+init
+1 2
+2 2
+0 0
+-1 -1
+neighbours
+game 2
+switch 0 0
+switch 1 1
